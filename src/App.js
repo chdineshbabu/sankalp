@@ -4,6 +4,7 @@ import Navbar from './Components/Navbar';
 import Login from './Components/Login';
 import LoginPage from './pages/LoginPage';
 import DashBoard from './pages/DashBoard';
+import AdminDashBoard from './pages/AdminDashBoard';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
       <Routes>
       <Route path='/' element = {<LoginPage />}/>
         <Route path='/dashboard' element={<DashBoard />} />
+        <Route path='admin' element={<AdminDashBoard />} />
       </Routes>
     </BrowserRouter>
   );
