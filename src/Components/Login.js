@@ -7,6 +7,7 @@ import LoginHero from '../asserts/loginHero.jpeg'
 
 function Login() {
     const navigate = useNavigate()
+    provider.setCustomParameters({hd:'veltech.edu.in'})
 
 const signInWithGoogle = async () => {
     const result = await signInWithPopup(auth, provider);
