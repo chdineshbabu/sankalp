@@ -1,41 +1,27 @@
-
-import React, { useState } from 'react';
-import { auth } from '../config/firebase';
+import Logo from '../asserts/uni.png';
+import { signInWithPopup } from "firebase/auth";
+import { auth, provider } from "../config/firebase";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+    const navigate = useNavigate()
 
-  const handleLogin = async () => {
-    try {
-      await auth.signInWithEmailAndPassword(email, password);
-      // Login successful, you can redirect or update UI here
-    } catch (error) {
-      // Handle login errors
-      console.error(error);
-    }
+const signInWithGoogle = async () => {
+    const result = await signInWithPopup(auth, provider);
+    console.log(result);
+    navigate("/dashboard");
   };
-
   return (
-    <div>
-      <h2>Login</h2>
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <button onClick={handleLogin}>Login</button>
+    <div className='flex justify-center items-center '>
+        <div className='h-4/6 w-4/6 shadow-xl'>
+        <img src={Logo} alt='logo' />
+
+        <h1>Login with google</h1>
+        
+        <img onClick={signInWithGoogle} src={Logo} />
+        </div>
     </div>
-  );
+  )
 }
 
-export default Login;
-
-
+export default Login
