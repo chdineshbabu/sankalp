@@ -41,6 +41,7 @@ function LeaveForm() {
             startDate: new Date(), // Provide a default date
             endDate: new Date(), // Provide a default date
             description: '',
+            status:'submitted'
         },
         validationSchema,
         onSubmit: async (values) => {
@@ -55,7 +56,8 @@ function LeaveForm() {
                         endDate: values.endDate.toISOString(),
                         description: values.description,
                         name:user?.displayName,
-                        emailId:user?.email
+                        emailId:user?.email,
+                        status:values.status
                         
                     });
     
