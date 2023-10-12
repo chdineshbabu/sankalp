@@ -1,8 +1,14 @@
 import './App.css';
+import { BrowserRouter,Route,Routes } from 'react-router-dom';
+import Navbar from './Components/Navbar';
 
 function App() {
   return (
-   <div className='text-xl font-semibold'>Let's start</div>
+    <BrowserRouter>
+    <Navbar />
+    <Routes>
+    </Routes>
+  </BrowserRouter>
   );
 }
 
