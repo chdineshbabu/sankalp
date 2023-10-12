@@ -2,7 +2,7 @@ import './App.css';
 
 function App() {
   return (
-   <div>Let's start</div>
+   <div className='text-xl font-semibold'>Let's start</div>
   );
 }
 
