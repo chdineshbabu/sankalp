@@ -11,7 +11,7 @@ function App() {
       <Navbar />
       <Routes>
       <Route path='/' element = {<LoginPage />}/>
-        <Route path='/dashbord' element={<DashBoard />} />
+        <Route path='/dashboard' element={<DashBoard />} />
       </Routes>
     </BrowserRouter>
   );
