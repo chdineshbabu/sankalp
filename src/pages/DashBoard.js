@@ -10,7 +10,7 @@ function DashBoard() {
 
     console.log(user)
   return (
-    <div className='m-14 px-16 flex gap-6'>
+    <div className='m-14 px-16 flex flex-col md:flex-row gap-6'>
       <LeaveForm />
       <DashboardInfo />
     </div>

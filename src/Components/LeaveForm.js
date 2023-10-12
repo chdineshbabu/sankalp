@@ -1,38 +1,67 @@
 import React, { useState } from 'react';
-import Datepicker from "react-tailwindcss-datepicker";
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { db } from '../config/firebase';
+import { collection, addDoc } from 'firebase/firestore';
 
 function LeaveForm() {
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
+
+    const handleStartDateChange = (newStartDate) => {
+        setStartDate(newStartDate);
+    };
+
+    const handleEndDateChange = (newEndDate) => {
+        setEndDate(newEndDate);
+    };
+
     const validationSchema = Yup.object().shape({
         type: Yup.string().required('Leave Type is required'),
-        date: Yup.object().shape({
-            startDate: Yup.date().required('Start Date is required'),
-            endDate: Yup.date()
-                .required('End Date is required')
-                .min(Yup.ref('startDate'), 'End Date must be after Start Date'),
-        }),
+        startDate: Yup.date().required('Start Date is required'),
+        endDate: Yup.date()
+            .when('startDate', (startDate, schema) => {
+                return startDate
+                    ? schema
+                        .required('End Date is required')
+                        .min(startDate, 'End Date must be after or equal to Start Date')
+                    : schema;
+            }),
         description: Yup.string().required('Description is required'),
     });
+    
 
     const formik = useFormik({
         initialValues: {
             type: 'Casual Leave (CL)',
-            date: {
-                startDate: new Date(),
-                endDate: new Date().setMonth(11),
-            },
+            startDate: null,
+            endDate: null,
             description: '',
         },
         validationSchema,
-        onSubmit: (values) => {
-            // Handle form submission here
-            console.log('Form submitted with values:', values);
+        onSubmit: async (values) => {
+            try {
+                const postsRef = collection(db, 'leaveApplications');
+                await addDoc(postsRef, {
+                    type: values.type,
+                    startDate: values.startDate,
+                    endDate: values.endDate,
+                    description: values.description,
+                });
+
+                console.log('Leave application submitted to Firestore');
+                // You can add further actions after successful submission
+            } catch (error) {
+                console.error('Error submitting leave application to Firestore:', error);
+                // Handle the error as needed
+            }
         },
     });
 
     return (
-        <div className='w-1/2 p-6 bg-white rounded-lg shadow-md'>
+        <div className='w-full md:w-1/2 p-6 bg-white rounded-lg shadow-md'>
             <h1 className='text-2xl font-semibold mb-4'>Leave Application</h1>
             <form onSubmit={formik.handleSubmit}>
                 <div className="mb-4">
@@ -56,14 +85,26 @@ function LeaveForm() {
                     {formik.touched.type && formik.errors.type && <div className="text-red-500">{formik.errors.type}</div>}
                 </div>
                 <div className='mb-4'>
-                    <label className="block text-gray-700 font-bold text-sm mb-2">Date From-To:</label>
+                    <label className="block text-gray-700 font-bold text-sm mb-2">Start Date:</label>
                     <div className='border-2 rounded-md p-3'>
-                        <Datepicker
-                            value={formik.values.date}
-                            onChange={(newValue) => formik.setFieldValue('date', newValue)}
+                        <DatePicker
+                            selected={startDate}
+                            onChange={date => handleStartDateChange(date)}
+                            dateFormat="MM/dd/yyyy" // Customize the date format
                         />
                     </div>
-                    {formik.touched.date && formik.errors.date && <div className="text-red-500">{formik.errors.date.startDate || formik.errors.date.endDate}</div>}
+                    {formik.touched.startDate && <div className="text-red-500">{formik.errors.startDate}</div>}
+                </div>
+                <div className='mb-4'>
+                    <label className="block text-gray-700 font-bold text-sm mb-2">End Date:</label>
+                    <div className='border-2 rounded-md p-3'>
+                        <DatePicker
+                            selected={endDate}
+                            onChange={date => handleEndDateChange(date)}
+                            dateFormat="MM/dd/yyyy" // Customize the date format
+                        />
+                    </div>
+                    {formik.touched.endDate && <div className="text-red-500">{formik.errors.endDate}</div>}
                 </div>
                 <div className='mb-4'>
                     <label htmlFor="description" className="block text-gray-700 font-bold text-sm mb-2">Description:</label>
@@ -80,7 +121,7 @@ function LeaveForm() {
                 </div>
                 <button
                     type="submit"
-                    className="bg-indigo-600 text-white hover:bg-indigo-700 rounded-md py-2 px-4 font-semibold focus:outline-none focus:ring focus:ring-indigo-400"
+                    className="bg-indigo-600 text-white hover.bg-indigo-700 rounded-md py-2 px-4 font-semibold focus.outline-none focus.ring focus.ring-indigo-400"
                 >
                     Submit
                 </button>
