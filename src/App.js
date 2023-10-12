@@ -1,17 +1,19 @@
 import './App.css';
-import { BrowserRouter,Route,Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Navbar from './Components/Navbar';
 import Login from './Components/Login';
+import LoginPage from './pages/LoginPage';
 
 function App() {
   return (
     <BrowserRouter>
-    <Navbar />
-    <Routes>
-    <Route path='/login' element={<Login />} />
-    </Routes>
-  </BrowserRouter>
+      <Navbar />
+      <Routes>
+      <Route path='/' element = {<LoginPage />}/>
+        <Route path='/dashbord' element={<Login />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
-export default App;
+export default App; 
