@@ -5,8 +5,12 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { db } from '../config/firebase';
 import { collection, addDoc } from 'firebase/firestore';
+import { auth } from "../config/firebase"
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 function LeaveForm() {
+
+    const [user] = useAuthState(auth);
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
 
@@ -24,9 +28,7 @@ function LeaveForm() {
         endDate: Yup.date()
             .when('startDate', (startDate, schema) => {
                 return startDate
-                    ? schema
-                        .required('End Date is required')
-                        .min(startDate, 'End Date must be after or equal to Start Date')
+                    ? schema.required('End Date is required').min(startDate, 'End Date must be after or equal to Start Date')
                     : schema;
             }),
         description: Yup.string().required('Description is required'),
@@ -36,29 +38,40 @@ function LeaveForm() {
     const formik = useFormik({
         initialValues: {
             type: 'Casual Leave (CL)',
-            startDate: null,
-            endDate: null,
+            startDate: new Date(), // Provide a default date
+            endDate: new Date(), // Provide a default date
             description: '',
         },
         validationSchema,
         onSubmit: async (values) => {
-            try {
-                const postsRef = collection(db, 'leaveApplications');
-                await addDoc(postsRef, {
-                    type: values.type,
-                    startDate: values.startDate,
-                    endDate: values.endDate,
-                    description: values.description,
-                });
+            // Check if startDate and endDate are not null
+            if (values.startDate && values.endDate) {
+                try {
+                    const postsRef = collection(db, 'leaveApplications');
+                    await addDoc(postsRef, {
 
-                console.log('Leave application submitted to Firestore');
-                // You can add further actions after successful submission
-            } catch (error) {
-                console.error('Error submitting leave application to Firestore:', error);
-                // Handle the error as needed
+                        type: values.type,
+                        startDate: values.startDate.toISOString(),
+                        endDate: values.endDate.toISOString(),
+                        description: values.description,
+                        name:user?.displayName,
+                        emailId:user?.email
+                        
+                    });
+    
+                    console.log('Leave application submitted to Firestore');
+                    // You can add further actions after successful submission
+                } catch (error) {
+                    console.error('Error submitting leave application to Firestore:', error);
+                    // Handle the error as needed
+                }
+            } else {
+                console.error('Start Date and End Date must not be null.');
+                // Handle this case as needed, e.g., show an error message to the user.
             }
         },
     });
+    
 
     return (
         <div className='w-full md:w-1/2 p-6 bg-white rounded-lg shadow-md'>

@@ -4,12 +4,7 @@ import { Card, Typography } from "@material-tailwind/react";
 const TABLE_HEAD = ["Name", "Email", "Leave Type", "Date", "Status",];
  
 const TABLE_ROWS = [
-  {
-    name: "John Michael",
-    job: "Manager",
-    date: "23/04/18",
-  },
-  
+
 
 ];
  
